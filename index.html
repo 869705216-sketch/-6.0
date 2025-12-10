@@ -1,28 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>Grand Luxury Interactive Christmas Tree</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "three": "https://aistudiocdn.com/three@^0.181.2",
-    "@react-three/fiber": "https://aistudiocdn.com/@react-three/fiber@^9.4.2",
-    "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
-    "@react-three/postprocessing": "https://aistudiocdn.com/@react-three/postprocessing@^3.0.4",
-    "zustand": "https://aistudiocdn.com/zustand@^5.0.9"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grand Luxury Christmas Tree</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              100: '#F9F1D8',
+              300: '#E6C885',
+              500: '#C5A059',
+              700: '#8C6E33',
+              900: '#5A4318',
+            },
+            emerald: {
+              900: '#022c22',
+              950: '#011c15',
+            }
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Extra styling -->
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #164e63 0, #020617 55%);
+      min-height: 100vh;
+      color: #f9fafb;
+    }
+    .starry {
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0, transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(248,250,252,0.15) 0, transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(252,211,77,0.15) 0, transparent 50%);
+    }
+    .glass {
+      background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(15,23,42,0.65));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148,163,184,0.35);
+    }
+    .glow-ring {
+      box-shadow:
+        0 0 40px rgba(234,179,8,0.35),
+        0 0 90px rgba(248,250,252,0.05);
+    }
+    .light-pulse {
+      animation: lightPulse 2.5s ease-in-out infinite;
+    }
+    .light-pulse:nth-child(2n) {
+      animation-delay: .8s;
+    }
+    .light-pulse:nth-child(3n) {
+      animation-delay: 1.6s;
+    }
+    @keyframes lightPulse {
+      0%,100% { opacity: .45; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-3px); }
+    }
+    .floating {
+      animation: floating 6s ease-in-out infinite;
+    }
+    @keyframes floating {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
 </head>
-  <body>
-    <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
+<body class="starry text-slate-100">
+
+  <!-- Page wrapper -->
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-10">
+
+    <!-- Main content -->
+    <div class="max-w-6xl w-full mx-auto grid lg:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
+
+      <!-- Left: Copy & CTA -->
+      <section class="space-y-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/70 border border-emerald-700/60 text-xs md:text-sm text-emerald-100">
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+          LIMITED HOLIDAY EDITION • 2025
+        </div>
+
+        <div class="space-y-4">
+          <h1 class="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight">
+            Grand Luxury <span class="text-gold-300">Christmas Tree</span>
+          </h1>
+          <p class="text-slate-200/80 text-sm md:text-base lg:text-lg max-w-xl">
+            A statement centerpiece crafted for modern penthouses & luxury homes. Pre-lit, perfectly full, and designed to shimmer under every toast, photo, and midnight moment.
+          </p>
+        </div>
+
+        <!-- Key points -->
+        <div class="grid sm:grid-cols-3 gap-4 text-xs md:text-sm">
+          <div class="glass rounded-2xl p-4 flex flex-col gap-1">
+            <p class="text-gold-300 font-semibold tracking-wide uppercase text-[11px]">Hotel-Luxe Volume</p>
+            <p class="text-slate-200/80">Thick, layered branches for a lush, 5-star lobby silhouette.</p>
+          </div>
+          <div class="glass rounded-2xl p-4 flex flex-col gap-1">
+            <p class="text-gold-300 font-semibold tracking-wide uppercase text-[11px]">Warm Golden Glow</p>
+            <p class="text-slate-200/80">Pre-strung LEDs in a champagne hue—no tangled light strings.</p>
+          </div>
+          <div class="glass rounded-2xl p-4 flex flex-col gap-1">
+            <p class="text-gold-300 font-semibold tracking-wide uppercase text-[11px]">Effortless Setup</p>
+            <p class="text-slate-200/80">Quick-connect sections, hidden cables, and sturdy base.</p>
+          </div>
+        </div>
+
+        <!-- CTA row -->
+        <div class="flex flex-wrap items-center gap-4">
+          <button class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gold-500 hover:bg-gold-700 text-slate-950 font-semibold text-sm md:text-base transition shadow-lg shadow-amber-500/40">
+            Reserve holiday delivery
+          </button>
+          <button class="inline-flex items-center justify-center px-4 py-3 rounded-full border border-slate-500/60 text-slate-100 text-sm md:text-base hover:bg-slate-800/50 transition">
+            View sizing & specs
+          </button>
+        </div>
+
+        <!-- Countdown -->
+        <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-slate-300/80">
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-gold-300"></span>
+            <span>Order in time for Christmas Eve:</span>
+          </div>
+          <div id="countdown" class="flex items-center gap-2 font-mono text-emerald-100">
+            <span class="px-2 py-1 rounded-lg bg-slate-900/60 border border-slate-700/60" data-unit="days">--d</span>
+            <span class="px-2 py-1 rounded-lg bg-slate-900/60 border border-slate-700/60" data-unit="hours">--h</span>
+            <span class="px-2 py-1 rounded-lg bg-slate-900/60 border border-slate-700/60" data-unit="minutes">--m</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Tree visual -->
+      <section class="relative flex items-center justify-center">
+        <!-- Glow base -->
+        <div class="absolute inset-x-4 bottom-0 h-40 bg-gradient-to-t from-emerald-900/80 via-emerald-950/0 to-transparent blur-3xl opacity-80 pointer-events-none"></div>
+
+        <div class="relative w-full max-w-md mx-auto glass rounded-[32px] px-6 pt-6 pb-7 glow-ring floating">
+          <!-- Top label -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2 text-xs text-slate-200/80">
+              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-900">
+                🎄
+              </span>
+              <span>Signature 7.5 ft Edition</span>
+            </div>
+            <div class="text-right text-xs text-gold-100/90">
+              <p class="font-semibold">New for 2025</p>
+              <p class="text-[11px] opacity-80">Gilded Evergreen Series</p>
+            </div>
+          </div>
+
+          <!-- Tree container -->
+          <div class="relative rounded-3xl bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-emerald-950/90 border border-slate-700/60 px-6 pt-6 pb-7 overflow-hidden">
+            <!-- Bokeh lights -->
+            <div class="absolute inset-0 opacity-70 pointer-events-none">
+              <div class="absolute w-2 h-2 rounded-full bg-amber-300/70 blur-[1px] left-10 top-10 light-pulse"></div>
+              <div class="absolute w-2 h-2 rounded-full bg-amber-200/85 blur-[1px] right-16 top-7 light-pulse"></div>
+              <div class="absolute w-1.5 h-1.5 rounded-full bg-emerald-200/70 blur-[1px] left-1/3 top-1/3 light-pulse"></div>
+              <div class="absolute w-1.5 h-1.5 rounded-full bg-amber-100/90 blur-[1px] right-1/4 top-1/2 light-pulse"></div>
+              <div class="absolute w-2 h-2 rounded-full bg-amber-400/80 blur-[1px] left-1/4 bottom-10 light-pulse"></div>
+              <div class="absolute w-1.5 h-1.5 rounded-full bg-emerald-100/80 blur-[1px] right-1/3 bottom-6 light-pulse"></div>
+            </div>
+
+            <!-- Tree silhouette (abstract, stylish) -->
+            <div class="relative flex flex-col items-center gap-2">
+              <!-- Star -->
+              <div class="w-6 h-6 rounded-full bg-amber-300 shadow-[0_0_16px_rgba(251,191,36,0.9)] mb-1 flex items-center justify-center text-[11px] text-amber-950">
+                ✨
+              </div>
+
+              <!-- Layers of the tree -->
+              <div class="w-40 h-40 bg-gradient-to-b from-emerald-500/80 via-emerald-700/85 to-emerald-950 rounded-[999px] blur-[1px] shadow-[0_0_40px_rgba(16,185,129,0.7)] opacity-95"></div>
+
+              <!-- Hint of ornaments as horizontal glow bands -->
+              <div class="absolute top-1/3 w-32 h-2 rounded-full bg-amber-200/70 blur-[2px]"></div>
+              <div class="absolute top-1/2 w-40 h-2 rounded-full bg-amber-300/70 blur-[2px]"></div>
+              <div class="absolute top-2/3 w-32 h-2 rounded-full bg-amber-200/60 blur-[2px]"></div>
+
+              <!-- Base -->
+              <div class="mt-3 w-20 h-1.5 rounded-full bg-slate-900/90"></div>
+              <div class="mt-1 w-24 h-1 rounded-full bg-emerald-900/90"></div>
+            </div>
+
+            <!-- Floating label -->
+            <div class="mt-5 flex items-center justify-between text-xs text-slate-200/85">
+              <div>
+                <p class="uppercase tracking-[0.12em] text-[11px] text-slate-400">Included</p>
+                <p>Pre-lit LEDs, luxe storage bag, matching tree skirt.</p>
+              </div>
+              <div class="text-right">
+                <p class="text-gold-300 font-semibold">From $799</p>
+                <p class="text-[11px] text-slate-400">White-glove delivery available</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer tiny specs -->
+          <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-300/80">
+            <div class="flex flex-wrap gap-3">
+              <span>3 heights: 7.5 ft / 9 ft / 10 ft</span>
+              <span>Warm white 2700K lights</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
+              <span>Designed for modern luxury interiors</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Small footer -->
+    <footer class="mt-10 text-xs text-slate-400/80 text-center">
+      <p>© 2025 Grand Luxury Holiday Collection · Imagined for visual demo use</p>
+    </footer>
+  </div>
+
+  <!-- Simple countdown script -->
+  <script>
+    (function () {
+      const countdownEl = document.getElementById('countdown');
+      if (!countdownEl) return;
+
+      function updateCountdown() {
+        // Target: Dec 24, 23:59 of current year
+        const now = new Date();
+        const year = now.getFullYear();
+        const target = new Date(year, 11, 24, 23, 59, 59); // month 11 = December
+
+        const diff = target.getTime() - now.getTime();
+        if (diff <= 0) {
+          countdownEl.innerHTML = '<span class="px-2 py-1 rounded-lg bg-emerald-900 border border-emerald-500 text-emerald-100">Delivery window for this year has closed</span>';
+          return;
+        }
+
+        const minutesTotal = Math.floor(diff / 1000 / 60);
+        const days = Math.floor(minutesTotal / (60 * 24));
+        const hours = Math.floor((minutesTotal - days * 24 * 60) / 60);
+        const minutes = minutesTotal % 60;
+
+        const daysEl = countdownEl.querySelector('[data-unit="days"]');
+        const hoursEl = countdownEl.querySelector('[data-unit="hours"]');
+        const minutesEl = countdownEl.querySelector('[data-unit="minutes"]');
+
+        if (daysEl) daysEl.textContent = days + 'd';
+        if (hoursEl) hoursEl.textContent = hours + 'h';
+        if (minutesEl) minutesEl.textContent = minutes + 'm';
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 60 * 1000);
+    })();
+  </script>
 </body>
 </html>
