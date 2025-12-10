@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #022b1c; /* Deep Emerald */
+  overflow: hidden;
+  font-family: 'Playfair Display', serif;
+}
+
+canvas {
+  touch-action: none;
+}
+
+/* Custom Scrollbar for Luxury Feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #022b1c; 
+}
+::-webkit-scrollbar-thumb {
+  background: #c5a059; 
+  border-radius: 4px;
+}
