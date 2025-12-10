@@ -1,0 +1,175 @@
+// src/components/Ornaments.tsx
+import React, { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+
+interface OrnamentsProps {
+  progressRef: React.MutableRefObject<number>;
+  chaosSeed: number;
+}
+
+const BALL_COUNT = 450;
+const GIFT_COUNT = 60;
+const LIGHT_COUNT = 260;
+
+export const Ornaments: React.FC<OrnamentsProps> = ({
+  progressRef,
+  chaosSeed,
+}) => {
+  const ballRef = useRef<THREE.InstancedMesh>(null);
+  const giftRef = useRef<THREE.InstancedMesh>(null);
+  const lightRef = useRef<THREE.InstancedMesh>(null);
+
+  type DualPositions = {
+    chaos: THREE.Vector3[];
+    target: THREE.Vector3[];
+    color: THREE.Color[];
+    weight: number; // 混沌时的惯性权重
+  };
+
+  const ballData = useMemo<DualPositions>(() => generateTreeInstances(BALL_COUNT, 1), []);
+  const giftData = useMemo<DualPositions>(() => generateTreeInstances(GIFT_COUNT, 1.8), []);
+  const lightData = useMemo<DualPositions>(() => generateTreeInstances(LIGHT_COUNT, 0.5), []);
+
+  useFrame((state, delta) => {
+    const progress = progressRef.current;
+    const t = state.clock.getElapsedTime();
+
+    updateInstances(ballRef, ballData, progress, delta, t, 0.6);
+    updateInstances(giftRef, giftData, progress, delta, t, 1.3);
+    updateInstances(lightRef, lightData, progress, delta, t, 0.2);
+  });
+
+  return (
+    <group>
+      {/* 彩球（轻） */}
+      <instancedMesh
+        ref={ballRef}
+        args={[undefined, undefined, BALL_COUNT]}
+        castShadow
+      >
+        <sphereGeometry args={[0.22, 16, 16]} />
+        <meshStandardMaterial
+          metalness={0.8}
+          roughness={0.2}
+          color="#f97316"
+        />
+      </instancedMesh>
+
+      {/* 礼物盒（重） */}
+      <instancedMesh
+        ref={giftRef}
+        args={[undefined, undefined, GIFT_COUNT]}
+        castShadow
+      >
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+        <meshStandardMaterial
+          metalness={0.7}
+          roughness={0.35}
+          color="#eab308"
+        />
+      </instancedMesh>
+
+      {/* 小灯（极轻，主要配合 Bloom） */}
+      <instancedMesh
+        ref={lightRef}
+        args={[undefined, undefined, LIGHT_COUNT]}
+      >
+        <sphereGeometry args={[0.12, 10, 10]} />
+        <meshBasicMaterial color="#fde68a" />
+      </instancedMesh>
+    </group>
+  );
+};
+
+function generateTreeInstances(count: number, baseRadius: number): {
+  chaos: THREE.Vector3[];
+  target: THREE.Vector3[];
+  color: THREE.Color[];
+  weight: number;
+} {
+  const chaos: THREE.Vector3[] = [];
+  const target: THREE.Vector3[] = [];
+  const colors: THREE.Color[] = [];
+
+  const colorPalettes = [
+    new THREE.Color('#f97316'),
+    new THREE.Color('#ea580c'),
+    new THREE.Color('#facc15'),
+    new THREE.Color('#fecaca'),
+  ];
+
+  for (let i = 0; i < count; i++) {
+    // chaos：远一点，让爆炸感强
+    const r = 15 + Math.random() * 8;
+    const theta = Math.acos(2 * Math.random() - 1);
+    const phi = 2 * Math.PI * Math.random();
+    chaos.push(
+      new THREE.Vector3(
+        r * Math.sin(theta) * Math.cos(phi),
+        r * Math.cos(theta),
+        r * Math.sin(theta) * Math.sin(phi)
+      )
+    );
+
+    // target：沿树体高度分布
+    const height = 10;
+    const y = Math.random() * height;
+    const radiusAtY = THREE.MathUtils.lerp(baseRadius, 3.5 * baseRadius, 1 - y / height);
+    const angle = Math.random() * Math.PI * 2;
+
+    target.push(
+      new THREE.Vector3(
+        Math.cos(angle) * radiusAtY,
+        y - height / 2,
+        Math.sin(angle) * radiusAtY
+      )
+    );
+
+    const c = colorPalettes[Math.floor(Math.random() * colorPalettes.length)].clone();
+    colors.push(c);
+  }
+
+  return { chaos, target, color: colors, weight: baseRadius };
+}
+
+function updateInstances(
+  ref: React.RefObject<THREE.InstancedMesh>,
+  data: { chaos: THREE.Vector3[]; target: THREE.Vector3[]; color: THREE.Color[]; weight: number },
+  progress: number,
+  delta: number,
+  time: number,
+  wobble: number
+) {
+  const inst = ref.current;
+  if (!inst) return;
+
+  const temp = new THREE.Object3D();
+  const color = new THREE.Color();
+
+  for (let i = 0; i < data.chaos.length; i++) {
+    const from = data.chaos[i];
+    const to = data.target[i];
+
+    const lerped = new THREE.Vector3().lerpVectors(from, to, progress);
+
+    // 混沌时多一点抖动
+    const chaosFactor = 1 - progress;
+    lerped.x += Math.sin(time * 1.2 + i) * wobble * chaosFactor * 0.12;
+    lerped.y += Math.cos(time * 1.4 + i * 0.5) * wobble * chaosFactor * 0.1;
+    lerped.z += Math.sin(time * 0.9 + i * 0.7) * wobble * chaosFactor * 0.12;
+
+    temp.position.copy(lerped);
+    temp.scale.setScalar(1 + chaosFactor * 0.25);
+
+    temp.lookAt(0, 0, 0);
+    temp.updateMatrix();
+    inst.setMatrixAt(i, temp.matrix);
+
+    color.copy(data.color[i]).lerp(new THREE.Color('#fef9c3'), progress * 0.6);
+    inst.setColorAt(i, color);
+  }
+
+  inst.instanceMatrix.needsUpdate = true;
+  if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
+}
